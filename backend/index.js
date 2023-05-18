@@ -20,7 +20,7 @@ const articleSchema = new mongoose.Schema({
   createdDate: { type: Date, default: Date.now },
 });
 
-
+console.log("1");
 
 app.get('/api/article', async (req, res) => {
   const Article = mongoose.model('Article', articleSchema);
