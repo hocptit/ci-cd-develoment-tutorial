@@ -1,0 +1,1 @@
+mongoUri=mongodb://admin:admin@mongo-container:27017/admin
