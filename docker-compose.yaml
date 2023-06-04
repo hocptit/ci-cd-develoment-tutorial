@@ -2,11 +2,10 @@ version: '3.7'
 services:
   node-container:
     build:
-      context: .
+      context: backend
       dockerfile: Dockerfile
-    restart: no
     env_file:
-      - .env
+      - backend/.env
     ports:
       - 3001:3001
     networks:
@@ -22,10 +21,20 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: 'admin'
     ports:
       - 27022:27017
-    restart: unless-stopped
+    restart: "unless-stopped"
     networks:
       - hh_network
-
+  next-app:
+    build:
+      context: frontend
+      dockerfile: Dockerfile_fe
+    container_name: next-container
+    restart: no
+    ports:
+      - 3000:3000
+    env_file:
+      - frontend/.env
+    networks:
+      - hh_network
 networks:
   hh_network:
-    external: true
