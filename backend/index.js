@@ -1,9 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-
+const Sum = require('./utils');
 const app = express();
 const port = 3001;
+console.log(Sum(102, 106));
 const mongoUri = process.env.mongoUri || 'mongodb://admin:admin@localhost:27017/admin'
 mongoose.connect(mongoUri, {
   useNewUrlParser: true,
@@ -13,25 +14,46 @@ mongoose.connect(mongoUri, {
 }).catch((err) => {
   console.error('Failed to connect MongoDB:', err);
 });
-
+const id = "123"
 const articleSchema = new mongoose.Schema({
   title: String,
   content: String,
+  id: String,
   createdDate: { type: Date, default: Date.now },
 });
+const Article = mongoose.model('Article', articleSchema);
 
-console.log("1");
 
+// Body-parser middleware
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 app.get('/api/article', async (req, res) => {
-  const Article = mongoose.model('Article', articleSchema);
-  const article = new Article({
-    title: 'Docker cơ bản 1',
-    content: 'You will likely find yourself rebuilding the same Docker image over and over again. Whether it’s for the next release of your software, or locally during development. Because building images is a common task, Docker provides several tools that speed up builds.'
-  });
-  await article.save()
-  console.log(article)
+  const article = await Article.findOne({id: id});
   res.json(article)
 });
+
+
+app.post('/api/article', async (req, res) => {
+  const { title, content } = req.body;
+
+  try {
+    const article = await Article.findOneAndUpdate(
+      { id: id },
+      { title, content },
+      { new: true }
+    );
+    
+    if (!article) {
+      return res.status(404).json({ error: 'Article not found' });
+    }
+    
+    res.json(article);
+  } catch (error) {
+    console.error('Failed to update article:', error);
+    res.status(500).json({ error: 'Failed to update article' });
+  }
+});
+// curl -X POST -H "Content-Type: application/json" -d '{"title":"New Title","content":"New Content"}' https://hocptit-redesigned-spoon-4w6646vxp54h4jj-3001.preview.app.github.dev/api/article
 
 app.listen(port, () => {
   console.log(`Server started at http://localhost:${port}`);
