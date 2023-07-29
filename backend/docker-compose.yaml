@@ -2,10 +2,10 @@ version: '3.7'
 services:
   node-container:
     build:
-      context: backend
+      context: .
       dockerfile: Dockerfile
     env_file:
-      - backend/.env
+      - .env
     ports:
       - 3001:3001
     networks:
@@ -26,20 +26,6 @@ services:
       - hh_network
     volumes:
       - db:/data/db
-
-  next-app:
-    build:
-      context: frontend
-      dockerfile: Dockerfile_fe
-    container_name: next-container
-    restart: no
-    ports:
-      - 3000:3000
-    env_file:
-      - frontend/.env
-    networks:
-      - hh_network
-
 volumes:
   db:
 networks:
